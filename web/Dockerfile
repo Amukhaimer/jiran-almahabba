@@ -13,7 +13,7 @@ RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /v
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_URL="file:./prisma/seed.db"
+ENV DATABASE_URL="file:./seed.db"
 RUN npx prisma generate \
   && npx prisma db push --skip-generate \
   && npx tsx prisma/seed.ts \
@@ -27,7 +27,7 @@ ENV DATABASE_URL="file:/data/prod.db"
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/* \
-  && mkdir -p /data
+  && mkdir -p /data /app/prisma
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
