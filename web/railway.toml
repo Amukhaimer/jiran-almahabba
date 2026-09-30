@@ -1,0 +1,15 @@
+# Deploy on Railway / Render / any Docker host
+# Root directory: web
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+
+[[mounts]]
+source = "building_services_data"
+destination = "/data"

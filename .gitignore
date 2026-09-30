@@ -1,0 +1,11 @@
+﻿node_modules/
+.next/
+web/node_modules/
+web/.next/
+web/prisma/*.db
+web/prisma/*.db-journal
+!web/data/*.xlsx
+.env
+.env*.local
+*.log
+.DS_Store

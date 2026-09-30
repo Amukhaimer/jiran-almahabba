@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Resident {
+  id              String    @id @default(cuid())
+  name            String
+  monthlyFee      Float     @default(10)
+  sortOrder       Int       @default(0)
+  active          Boolean   @default(true)
+  activeFromYear  Int       @default(2017)
+  activeFromMonth Int       @default(4)
+  activeToYear    Int?
+  activeToMonth   Int?
+  createdAt       DateTime  @default(now())
+  payments        Payment[]
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  residentId String
+  resident   Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  year       Int
+  month      Int
+  amount     Float
+  kind       String   @default("MONTHLY") // MONTHLY | PRIOR_DEBT | SETTLEMENT
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([year, month])
+  @@index([residentId])
+}
+
+model ExpenseCategory {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  sortOrder Int       @default(0)
+  expenses  Expense[]
+}
+
+model Expense {
+  id         String          @id @default(cuid())
+  categoryId String
+  category   ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  year       Int
+  month      Int
+  amount     Float
+  note       String?
+  createdAt  DateTime        @default(now())
+
+  @@index([year, month])
+  @@index([categoryId])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
