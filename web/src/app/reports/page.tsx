@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
+import { PrintToolbar } from "@/components/PrintToolbar";
 import { formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import {
@@ -39,9 +40,15 @@ function ReportStat({
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string; to?: string; year?: string }>;
+  searchParams: Promise<{
+    from?: string;
+    to?: string;
+    year?: string;
+    print?: string;
+  }>;
 }) {
   const sp = await searchParams;
+  const printMode = sp.print === "1";
   const now = new Date();
   const currentYear = now.getFullYear();
 
@@ -131,9 +138,15 @@ export default async function ReportsPage({
   );
 
   const totalArrearsOwed = arrears.reduce((s, r) => s + r.owed, 0);
+  const reportTitle = `تقرير جيران المحبة — ${periodLabel.replace(/\s+/g, " ")}`;
+  const backHref = `/reports?from=${fromYear}&to=${toYear}`;
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6${printMode ? " print-mode" : ""}`}>
+      {printMode ? (
+        <PrintToolbar documentTitle={reportTitle} backHref={backHref} />
+      ) : (
+        <>
       <div className="flex flex-wrap items-end justify-between gap-4 no-print">
         <div>
           <h1 className="text-2xl font-bold">التقارير</h1>
@@ -172,7 +185,8 @@ export default async function ReportsPage({
             </button>
           </form>
           <PrintButton
-            documentTitle={`تقرير جيران المحبة — ${periodLabel.replace(/\s+/g, " ")}`}
+            documentTitle={reportTitle}
+            href={backHref}
           />
         </div>
       </div>
@@ -224,6 +238,8 @@ export default async function ReportsPage({
           ))}
         </div>
       </section>
+        </>
+      )}
 
       <article className="report-doc">
         <header className="report-hero">

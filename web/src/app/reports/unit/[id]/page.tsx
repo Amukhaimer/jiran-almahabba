@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
+import { PrintToolbar } from "@/components/PrintToolbar";
 import { formatMoney, paymentKindLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getUnitReport } from "@/lib/stats";
@@ -35,10 +36,11 @@ export default async function UnitReportPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ from?: string; to?: string }>;
+  searchParams: Promise<{ from?: string; to?: string; print?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
+  const printMode = sp.print === "1";
   const now = new Date();
   const currentYear = now.getFullYear();
 
@@ -82,9 +84,15 @@ export default async function UnitReportPage({
     month: "2-digit",
     day: "2-digit",
   }).format(now);
+  const reportTitle = `تقرير شقة ${report.resident.name} — ${periodLabel.replace(/\s+/g, " ")}`;
+  const backHref = `/reports/unit/${id}?from=${fromYear}&to=${toYear}`;
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6${printMode ? " print-mode" : ""}`}>
+      {printMode ? (
+        <PrintToolbar documentTitle={reportTitle} backHref={backHref} />
+      ) : (
+        <>
       <div className="flex flex-wrap items-end justify-between gap-4 no-print">
         <div>
           <Link href="/reports" className="text-sm text-[var(--accent)]">
@@ -127,7 +135,8 @@ export default async function UnitReportPage({
           </form>
           <PrintButton
             label="طباعة تقرير الشقة"
-            documentTitle={`تقرير شقة ${report.resident.name} — ${periodLabel.replace(/\s+/g, " ")}`}
+            documentTitle={reportTitle}
+            href={backHref}
           />
         </div>
       </div>
@@ -151,6 +160,8 @@ export default async function UnitReportPage({
           ))}
         </div>
       </div>
+        </>
+      )}
 
       <article className="report-doc">
         <header className="report-hero">
