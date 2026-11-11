@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# production data on the VPS (database + backups)
+/storage/
 
 # prisma / sqlite
 /prisma/*.db
