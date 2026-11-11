@@ -11,14 +11,10 @@ function isPublic(pathname: string): boolean {
 // Everything except the login/setup pages requires a valid signed session cookie.
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const signedIn = verifyToken(request.cookies.get(SESSION_COOKIE)?.value, "s") !== null;
+  if (isPublic(pathname)) return NextResponse.next();
 
-  if (isPublic(pathname)) {
-    if (signedIn && request.method === "GET") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+  // Signature check only (no DB here). Pages and actions call requireUser() for the full check.
+  const signedIn = verifyToken(request.cookies.get(SESSION_COOKIE)?.value, "s") !== null;
   if (!signedIn) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

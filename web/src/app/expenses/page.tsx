@@ -10,12 +10,14 @@ import {
 } from "@/lib/actions";
 import { formatMoney, MONTH_NAMES } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 export default async function ExpensesPage({
   searchParams,
 }: {
   searchParams: Promise<{ year?: string; add?: string }>;
 }) {
+  await requireUser();
   const sp = await searchParams;
   const now = new Date();
   const year = Number(sp.year) || now.getFullYear();

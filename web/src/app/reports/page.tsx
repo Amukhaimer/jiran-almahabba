@@ -11,6 +11,7 @@ import {
   sumExpensesRange,
   yearlyBreakdownRange,
 } from "@/lib/stats";
+import { requireUser } from "@/lib/auth";
 
 function parseYear(value: string | undefined, fallback: number) {
   const n = Number(value);
@@ -47,6 +48,7 @@ export default async function ReportsPage({
     print?: string;
   }>;
 }) {
+  await requireUser();
   const sp = await searchParams;
   const printMode = sp.print === "1";
   const now = new Date();

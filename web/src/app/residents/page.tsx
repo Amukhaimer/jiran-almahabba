@@ -11,6 +11,7 @@ import {
 import { formatMoney, MONTH_NAMES } from "@/lib/format";
 import { formatOccupancyLabel } from "@/lib/stats";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 const now = new Date();
 const defaultYear = now.getFullYear();
@@ -79,6 +80,7 @@ function OccupancyFields({
 }
 
 export default async function ResidentsPage() {
+  await requireUser();
   const residents = await prisma.resident.findMany({
     orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
     include: {

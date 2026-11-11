@@ -14,6 +14,7 @@ import {
 import { formatMoney, MONTH_NAMES, paymentKindLabel } from "@/lib/format";
 import { formatOccupancyLabel } from "@/lib/stats";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 export default async function ResidentDetailPage({
   params,
@@ -29,6 +30,7 @@ export default async function ResidentDetailPage({
     updated?: string;
   }>;
 }) {
+  await requireUser();
   const { id } = await params;
   const sp = await searchParams;
   const created = sp.created ? Number(sp.created) : undefined;

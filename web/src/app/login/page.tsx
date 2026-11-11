@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { login } from "@/lib/auth-actions";
-import { ensureUserTable } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { ensureUserTable, getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  if (await getSessionUser()) redirect("/");
   await ensureUserTable();
   const hasUser = (await prisma.user.count()) > 0;
 

@@ -3,8 +3,10 @@ import { StatCard } from "@/components/StatCard";
 import { formatMoney, MONTH_NAMES } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getFundBalance, sumCashIncome, sumExpenses } from "@/lib/stats";
+import { requireUser } from "@/lib/auth";
 
 export default async function HomePage() {
+  await requireUser();
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;

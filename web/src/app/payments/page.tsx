@@ -6,6 +6,7 @@ import { EditToggle } from "@/components/EditToggle";
 import { createPaymentRange, deletePayment, updatePayment } from "@/lib/actions";
 import { formatMoney, MONTH_NAMES, paymentKindLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 export default async function PaymentsPage({
   searchParams,
@@ -20,6 +21,7 @@ export default async function PaymentsPage({
     updated?: string;
   }>;
 }) {
+  await requireUser();
   const sp = await searchParams;
   const now = new Date();
   const year = Number(sp.year) || now.getFullYear();

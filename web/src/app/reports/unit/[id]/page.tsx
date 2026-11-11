@@ -5,6 +5,7 @@ import { PrintToolbar } from "@/components/PrintToolbar";
 import { formatMoney, paymentKindLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getUnitReport } from "@/lib/stats";
+import { requireUser } from "@/lib/auth";
 
 function parseYear(value: string | undefined, fallback: number) {
   const n = Number(value);
@@ -38,6 +39,7 @@ export default async function UnitReportPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ from?: string; to?: string; print?: string }>;
 }) {
+  await requireUser();
   const { id } = await params;
   const sp = await searchParams;
   const printMode = sp.print === "1";
