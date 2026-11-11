@@ -12,6 +12,8 @@ services:
       DATABASE_URL: "file:/data/prod.db"
       HOSTNAME: "0.0.0.0"
       PORT: "3000"
+      SESSION_SECRET: "${SESSION_SECRET:?Set SESSION_SECRET in .env (openssl rand -hex 32)}"
+      SETUP_TOKEN: "${SETUP_TOKEN:-}"
     volumes:
       - ./storage:/data
     ports:

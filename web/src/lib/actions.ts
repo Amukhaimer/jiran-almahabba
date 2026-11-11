@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 function revalidatePaymentPaths(residentId: string) {
@@ -44,6 +45,7 @@ async function hasMonthlyPayment(
 }
 
 export async function createPayment(formData: FormData) {
+  await requireUser();
   const residentId = String(formData.get("residentId") || "");
   const year = Number(formData.get("year"));
   const month = Number(formData.get("month"));
@@ -76,6 +78,7 @@ export async function createPayment(formData: FormData) {
 
 /** تسجيل دفعات لعدة أشهر دفعة واحدة (قيد منفصل لكل شهر) */
 export async function createPaymentRange(formData: FormData) {
+  await requireUser();
   const residentId = String(formData.get("residentId") || "");
   const year = Number(formData.get("year"));
   let fromMonth = Number(formData.get("fromMonth") || formData.get("month"));
@@ -166,6 +169,7 @@ export async function createPaymentRange(formData: FormData) {
 }
 
 export async function deletePayment(id: string) {
+  await requireUser();
   const payment = await prisma.payment.findUnique({ where: { id } });
   await prisma.payment.delete({ where: { id } });
   revalidatePath("/");
@@ -175,6 +179,7 @@ export async function deletePayment(id: string) {
 }
 
 export async function updatePayment(formData: FormData) {
+  await requireUser();
   const id = String(formData.get("id") || "");
   const residentId = String(formData.get("residentId") || "");
   const year = Number(formData.get("year"));
@@ -213,6 +218,7 @@ export async function updatePayment(formData: FormData) {
 }
 
 export async function createExpense(formData: FormData) {
+  await requireUser();
   const categoryId = String(formData.get("categoryId") || "");
   const year = Number(formData.get("year"));
   const month = Number(formData.get("month"));
@@ -232,12 +238,14 @@ export async function createExpense(formData: FormData) {
 }
 
 export async function deleteExpense(id: string) {
+  await requireUser();
   await prisma.expense.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/expenses");
 }
 
 export async function updateExpense(formData: FormData) {
+  await requireUser();
   const id = String(formData.get("id") || "");
   const categoryId = String(formData.get("categoryId") || "");
   const year = Number(formData.get("year"));
@@ -260,6 +268,7 @@ export async function updateExpense(formData: FormData) {
 }
 
 export async function toggleResident(id: string, active: boolean) {
+  await requireUser();
   await prisma.resident.update({ where: { id }, data: { active } });
   revalidatePath("/residents");
   revalidatePath("/");
@@ -281,6 +290,7 @@ function parseOptionalYearField(formData: FormData, key: string): number | null 
 }
 
 export async function updateResident(formData: FormData) {
+  await requireUser();
   const id = String(formData.get("id") || "");
   const name = String(formData.get("name") || "").trim();
   const monthlyFee = Number(formData.get("monthlyFee") || 10);
@@ -325,6 +335,7 @@ export async function updateResident(formData: FormData) {
 
 /** ساكن جديد في شقة (مع تاريخ دخول) */
 export async function createResident(formData: FormData) {
+  await requireUser();
   const name = String(formData.get("name") || "").trim();
   const monthlyFee = Number(formData.get("monthlyFee") || 10);
   const activeFromYear = Number(formData.get("activeFromYear"));
@@ -359,6 +370,7 @@ export async function createResident(formData: FormData) {
 }
 
 export async function createCategory(formData: FormData) {
+  await requireUser();
   const name = String(formData.get("name") || "").trim();
   if (!name) throw new Error("اسم البند مطلوب");
   const max = await prisma.expenseCategory.aggregate({

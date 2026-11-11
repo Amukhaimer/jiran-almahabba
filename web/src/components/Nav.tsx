@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logout } from "@/lib/auth-actions";
 
 const links = [
   { href: "/", label: "الرئيسية" },
@@ -8,7 +9,13 @@ const links = [
   { href: "/reports", label: "التقارير" },
 ];
 
-export function Nav({ buildingName }: { buildingName: string }) {
+export function Nav({
+  buildingName,
+  username,
+}: {
+  buildingName: string;
+  username: string | null;
+}) {
   return (
     <header className="border-b border-[var(--line)] bg-[var(--surface)]/90 backdrop-blur-md sticky top-0 z-40 no-print">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
@@ -19,7 +26,7 @@ export function Nav({ buildingName }: { buildingName: string }) {
           <span className="text-xs text-[var(--muted)]">إدارة خدمات البناية</span>
         </Link>
         <nav className="flex flex-wrap items-center gap-1">
-          {links.map((l) => (
+          {(username ? links : []).map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -28,6 +35,17 @@ export function Nav({ buildingName }: { buildingName: string }) {
               {l.label}
             </Link>
           ))}
+          {username ? (
+            <form action={logout}>
+              <button
+                type="submit"
+                className="rounded-lg px-3 py-1.5 text-sm text-[var(--bad)] hover:bg-[var(--accent-soft)] transition-colors cursor-pointer"
+                title={username}
+              >
+                خروج
+              </button>
+            </form>
+          ) : null}
         </nav>
       </div>
     </header>

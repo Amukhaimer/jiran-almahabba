@@ -49,6 +49,19 @@ cd /home/mateen/jiran/web && docker compose stop app && cp storage/backups/prod-
 
 النسخ الاحتياطية موجودة على نفس السيرفر؛ يُنصح بسحب نسخة دورية إلى جهازك.
 
+## تسجيل الدخول (مستخدم + كلمة مرور + تحقق بخطوتين)
+
+- كل الصفحات محمية؛ الدخول باسم المستخدم وكلمة المرور ورمز من تطبيق المصادقة (TOTP).
+- الحساب يُنشأ مرة واحدة من `https://jiran.jumanlady.com/setup` باستخدام `SETUP_TOKEN` الموجود في `web/.env` على السيرفر. بعد إنشاء الحساب تتعطل صفحة الإعداد.
+- `SESSION_SECRET` في `web/.env` يوقّع الجلسات (مدة الجلسة 7 أيام). تغييره يُخرج الجميع.
+- 5 محاولات خاطئة تقفل الدخول 15 دقيقة.
+
+**نسيت كلمة المرور أو فقدت الهاتف؟** احذف الحساب من السيرفر ثم أنشئه من جديد عبر `/setup` (بيانات الدفعات لا تتأثر):
+
+```bash
+cd /home/mateen/jiran/web && sqlite3 storage/prod.db 'DELETE FROM "User";' && grep SETUP_TOKEN .env
+```
+
 ## ملاحظات
 
 - إن أعادت لوحة CWP كتابة إعدادات nginx واختفى الموقع، أعد إنشاء الملفين من `deploy/nginx-jiran.conf` ثم `nginx -t && systemctl reload nginx`.

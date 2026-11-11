@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import { Nav } from "@/components/Nav";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import "./globals.css";
 
@@ -23,7 +24,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let buildingName = "جيران المحبة";
+  let username: string | null = null;
   try {
+    username = (await getSessionUser())?.username ?? null;
     const setting = await prisma.setting.findUnique({
       where: { key: "buildingName" },
     });
@@ -35,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full font-sans antialiased">
-        <Nav buildingName={buildingName} />
+        <Nav buildingName={buildingName} username={username} />
         <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
       </body>
     </html>
