@@ -1,5 +1,6 @@
-# VPS deployment: app + automatic HTTPS (Caddy) + daily SQLite backups.
-# Usage: cp .env.example .env  -> set DOMAIN -> docker compose up -d --build
+# Deployment on a shared VPS that already runs nginx on ports 80/443.
+# The app listens only on 127.0.0.1:${APP_PORT}; the host nginx proxies the domain to it
+# (see deploy/nginx-jiran.conf). Usage: docker compose up -d --build
 
 services:
   app:
@@ -11,23 +12,8 @@ services:
       PORT: "3000"
     volumes:
       - ./storage:/data
-    expose:
-      - "3000"
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - app
-    environment:
-      DOMAIN: "${DOMAIN:?Set DOMAIN in .env}"
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - "127.0.0.1:${APP_PORT:-3100}:3000"
 
   # Consistent daily snapshot of the database, kept for 14 days in ./storage/backups
   backup:
@@ -48,7 +34,3 @@ services:
           fi
           sleep 86400
         done
-
-volumes:
-  caddy_data:
-  caddy_config:
