@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintToolbar } from "@/components/PrintToolbar";
-import { formatMoney, paymentKindLabel } from "@/lib/format";
+import { fillYearRange, formatMoney, paymentKindLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getUnitReport } from "@/lib/stats";
 import { requireUser } from "@/lib/auth";
@@ -70,14 +70,7 @@ export default async function UnitReportPage({
 
   if (!report) notFound();
 
-  const yearsAsc = Array.from(
-    new Set([
-      ...yearsRaw.map((y) => y.year),
-      fromYear,
-      toYear,
-      currentYear,
-    ]),
-  ).sort((a, b) => a - b);
+  const yearsAsc = fillYearRange([...yearsRaw.map((y) => y.year), fromYear, toYear]);
 
   const periodLabel =
     fromYear === toYear ? `سنة ${fromYear}` : `${fromYear} – ${toYear}`;

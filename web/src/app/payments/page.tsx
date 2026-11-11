@@ -4,7 +4,7 @@ import { AdminNotice } from "@/components/AdminNotice";
 import { ConfirmForm } from "@/components/ConfirmForm";
 import { EditToggle } from "@/components/EditToggle";
 import { createPaymentRange, deletePayment, updatePayment } from "@/lib/actions";
-import { formatMoney, MONTH_NAMES, paymentKindLabel } from "@/lib/format";
+import { fillYearRange, formatMoney, MONTH_NAMES, paymentKindLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 
@@ -46,8 +46,7 @@ export default async function PaymentsPage({
     }),
   ]);
 
-  const years = yearsRaw.map((y) => y.year);
-  if (!years.includes(year)) years.unshift(year);
+  const years = fillYearRange([...yearsRaw.map((y) => y.year), year]).reverse();
 
   const yearTotal = payments
     .filter((p) => p.kind !== "PRIOR_DEBT")

@@ -8,7 +8,7 @@ import {
   deleteExpense,
   updateExpense,
 } from "@/lib/actions";
-import { formatMoney, MONTH_NAMES } from "@/lib/format";
+import { fillYearRange, formatMoney, MONTH_NAMES } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 
@@ -36,8 +36,7 @@ export default async function ExpensesPage({
     }),
   ]);
 
-  const years = yearsRaw.map((y) => y.year);
-  if (!years.includes(year)) years.unshift(year);
+  const years = fillYearRange([...yearsRaw.map((y) => y.year), year]).reverse();
   const yearTotal = expenses.reduce((s, e) => s + e.amount, 0);
 
   const byCategory = categories.map((c) => ({

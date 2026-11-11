@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintToolbar } from "@/components/PrintToolbar";
-import { formatMoney } from "@/lib/format";
+import { fillYearRange, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import {
   getArrears,
@@ -76,17 +76,13 @@ export default async function ReportsPage({
     }),
   ]);
 
-  const years = Array.from(
-    new Set([
-      ...yearsFromPay.map((y) => y.year),
-      ...yearsFromExp.map((y) => y.year),
-      fromYear,
-      toYear,
-      currentYear,
-    ]),
-  ).sort((a, b) => b - a);
-
-  const yearsAsc = [...years].sort((a, b) => a - b);
+  const yearsAsc = fillYearRange([
+    ...yearsFromPay.map((y) => y.year),
+    ...yearsFromExp.map((y) => y.year),
+    fromYear,
+    toYear,
+  ]);
+  const years = [...yearsAsc].reverse();
 
   const [
     incomePeriod,

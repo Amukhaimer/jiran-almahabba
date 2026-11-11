@@ -38,3 +38,15 @@ export function paymentKindLabel(kind: string): string {
       return "اشتراك شهري";
   }
 }
+
+/**
+ * Every year from the earliest given year up to the latest (at least the current year),
+ * ascending. Year pickers use this so years without records are still selectable.
+ */
+export function fillYearRange(years: number[]): number[] {
+  const current = new Date().getFullYear();
+  const valid = years.filter((y) => Number.isInteger(y) && y >= 2000 && y <= current + 5);
+  const min = Math.min(current, ...valid);
+  const max = Math.max(current, ...valid);
+  return Array.from({ length: max - min + 1 }, (_, i) => min + i);
+}
