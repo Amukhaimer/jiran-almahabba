@@ -2,6 +2,8 @@
 # The app listens only on 127.0.0.1:${APP_PORT}; the host nginx proxies the domain to it
 # (see deploy/nginx-jiran.conf). Usage: docker compose up -d --build
 
+name: jiran
+
 services:
   app:
     build: .
